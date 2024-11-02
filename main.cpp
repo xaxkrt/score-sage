@@ -1,10 +1,7 @@
-#include <cmath>
 #include <iostream>
-using std::atoi;
 using std::cin;
 using std::cout;
 using std::endl;
-using std::stoi;
 
 #include <fstream>
 using std::ifstream;
@@ -13,9 +10,13 @@ using std::ifstream;
 using std::vector;
 
 #include <string>
+using std::stoi;
 using std::string;
 
+#include "./student.h"
+
 int to_int(char c);
+void student_sort(vector<Student>& students);
 
 int main() {
     vector<string> names;
@@ -114,6 +115,38 @@ int main() {
         }
     }
 
+    // 初始化学生列表
+    vector<Student> students;
+    for (int i = 0; i < 55; i++) {
+        students.push_back(Student(i + 1, scores[i]));
+    }
+
+    // 初始化小组列表
+    vector<Student> gro;
+    for (int i = 0; i < 11; i++) {
+        gro.push_back(students[groups[i][0] - 1]);
+        for (int j = 1; j < 5; j++) {
+            gro[i]._score += students[groups[i][j] - 1]._score;
+        }
+    }
+
+    // 排序
+    // 个人
+    student_sort(students);
+    // 小组
+    student_sort(gro);
+
+    // 输出
+    cout << "个人排名: " << endl;
+    for (auto i : students) {
+        cout << "{" << names[i._number - 1] << ", " << i._score << "}" << endl;
+    }
+
+    cout << "小组排名" << endl;
+    for (auto i : gro) {
+        cout << "{" << names[i._number - 1] << ", " << i._score << "}" << endl;
+    }
+
     return 0;
 }
 
@@ -123,5 +156,20 @@ int to_int(char c) {
         return 10;
     } else {
         return c - 48;
+    }
+}
+
+void student_sort(vector<Student>& students) {
+    bool flag = true;
+    while (flag) {
+        flag = false;
+        for (int i = 0; i < students.size() - 1; i++) {
+            if (students[i]._score < students[i + 1]._score) {
+                flag = true;
+                Student temp = students[i];
+                students[i] = students[i + 1];
+                students[i + 1] = temp;
+            }
+        }
     }
 }
